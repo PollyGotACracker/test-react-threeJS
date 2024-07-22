@@ -6,6 +6,7 @@ import { useGLTF, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 
 function App() {
   const [selectedMesh, setSelectedMesh] = useState(null);
+  const [coordinate, setCoordinate] = useState({ x: null, y: null });
 
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
@@ -17,10 +18,13 @@ function App() {
         <directionalLight castShadow position={[0, 10, 5]} intensity={4} />
         <ambientLight intensity={0.4} />
         <Scene />
-        <Raycaster setSelectedMesh={setSelectedMesh} />
+        <Raycaster
+          setSelectedMesh={setSelectedMesh}
+          setCoordinate={setCoordinate}
+        />
         <OrbitControls enableDamping={true} />
       </Canvas>
-      {selectedMesh && <Detail mesh={selectedMesh} />}
+      {selectedMesh && <Detail mesh={selectedMesh} coordinate={coordinate} />}
       {selectedMesh && <HighlightMesh mesh={selectedMesh} color={0xff0000} />}
     </div>
   );
@@ -36,7 +40,7 @@ function Scene() {
   );
 }
 
-function Raycaster({ setSelectedMesh }) {
+function Raycaster({ setSelectedMesh, setCoordinate }) {
   const { camera, gl, scene } = useThree();
   const raycaster = useRef(new THREE.Raycaster());
   const mouse = useRef(new THREE.Vector2());
@@ -57,8 +61,10 @@ function Raycaster({ setSelectedMesh }) {
       const intersects = raycaster.current.intersectObjects(scene.children);
       if (intersects.length > 0) {
         setSelectedMesh(intersects[0].object);
+        setCoordinate({ x: event.clientX, y: event.clientY });
       } else {
         setSelectedMesh(null);
+        setCoordinate({ x: null, y: null });
       }
     };
     gl.domElement.addEventListener("click", handleMouseClick);
@@ -89,7 +95,7 @@ function HighlightMesh({ mesh, color }) {
   return null;
 }
 
-function Detail({ mesh }) {
+function Detail({ mesh, coordinate }) {
   const convertMeshName = () => {
     switch (mesh.name) {
       case "bread":
@@ -108,19 +114,41 @@ function Detail({ mesh }) {
   const meshName = convertMeshName(mesh.name);
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        background: "white",
-        padding: "10px",
-        color: "black",
-      }}
-    >
-      {`${meshName} is selected`}
-    </div>
+    <>
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          background: "white",
+          padding: "10px",
+          color: "black",
+        }}
+      >
+        {`${meshName} is selected`}
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          top: `${coordinate.y}px`,
+          left: `${coordinate.x}px`,
+          transform: "translate(-50%, -150%)",
+          transition: "all 300ms ease",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "200px",
+          height: "60px",
+          borderRadius: "10px",
+          background: "white",
+          padding: "10px",
+          color: "black",
+        }}
+      >
+        {`${meshName} is selected`}
+      </div>
+    </>
   );
 }
 
