@@ -14,12 +14,13 @@ function App() {
         // camera={{ position: [8, 15, 12], fov: 50, zoom: 40 }}
       >
         <PerspectiveCamera makeDefault position={[8, 15, 12]} zoom={30} />
-        <ambientLight intensity={1} />
+        <directionalLight castShadow position={[0, 10, 5]} intensity={4} />
+        <ambientLight intensity={0.4} />
         <Scene />
         <Raycaster setSelectedMesh={setSelectedMesh} />
-        <OrbitControls />
+        <OrbitControls enableDamping={true} />
       </Canvas>
-      {selectedMesh && <Detail name={selectedMesh.name} />}
+      {selectedMesh && <Detail mesh={selectedMesh} />}
       {selectedMesh && <HighlightMesh mesh={selectedMesh} color={0xff0000} />}
     </div>
   );
@@ -30,7 +31,9 @@ function Scene() {
   // const { scene } = useLoader(GLTFLoader, source);
   const { scene } = useGLTF(source);
 
-  return <primitive object={scene} scale={[1, 1, 1]} position={[0, 0, 0]} />;
+  return (
+    <primitive object={scene} scale={[1, 1, 1]} position={[-0.1, -0.04, 0]} />
+  );
 }
 
 function Raycaster({ setSelectedMesh }) {
@@ -72,7 +75,7 @@ function HighlightMesh({ mesh, color }) {
   useEffect(() => {
     if (mesh) {
       mesh.material.emissive = new THREE.Color(color);
-      mesh.material.emissiveIntensity = 0.5;
+      mesh.material.emissiveIntensity = 0.9;
     }
 
     return () => {
@@ -86,10 +89,37 @@ function HighlightMesh({ mesh, color }) {
   return null;
 }
 
-function Detail({ name }) {
+function Detail({ mesh }) {
+  const convertMeshName = () => {
+    switch (mesh.name) {
+      case "bread":
+        return "Rye Bread";
+      case "bread001":
+        return "Pineapple Bun";
+      case "bread002":
+        return "Long Baguette";
+      case "bread003":
+        return "Short Baguette";
+      default:
+        return "";
+    }
+  };
+
+  const meshName = convertMeshName(mesh.name);
+
   return (
-    <div style={{ position: "absolute", top: 0, left: 0 }}>
-      {`${name} is selected`}
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        background: "white",
+        padding: "10px",
+        color: "black",
+      }}
+    >
+      {`${meshName} is selected`}
     </div>
   );
 }
