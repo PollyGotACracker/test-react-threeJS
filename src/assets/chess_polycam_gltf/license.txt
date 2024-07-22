@@ -1,0 +1,11 @@
+Model Information:
+* title:	Chess Polycam GLB
+* source:	https://sketchfab.com/3d-models/chess-polycam-glb-269a90dfd93f4c9187cc3a671ca7d4fd
+* author:	Moshe Caine (https://sketchfab.com/moshecaine)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Chess Polycam GLB" (https://sketchfab.com/3d-models/chess-polycam-glb-269a90dfd93f4c9187cc3a671ca7d4fd) by Moshe Caine (https://sketchfab.com/moshecaine) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
