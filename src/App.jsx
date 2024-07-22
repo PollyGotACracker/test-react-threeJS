@@ -1,4 +1,4 @@
-import source from "./assets/chess_polycam_glb/source/polycam_auto_shoot.glb?url";
+import source from "./assets/free_bread_pack_cs2_glb/source/bread pack.glb?url";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useThree } from "@react-three/fiber";
@@ -13,7 +13,7 @@ function App() {
         style={{ width: "100vw", height: "100vh" }}
         // camera={{ position: [8, 15, 12], fov: 50, zoom: 40 }}
       >
-        <PerspectiveCamera makeDefault position={[8, 15, 12]} zoom={40} />
+        <PerspectiveCamera makeDefault position={[8, 15, 12]} zoom={30} />
         <ambientLight intensity={1} />
         <Scene />
         <Raycaster setSelectedMesh={setSelectedMesh} />
