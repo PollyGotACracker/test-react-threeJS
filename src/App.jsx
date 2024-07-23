@@ -44,9 +44,10 @@ function Raycaster({ setSelectedMesh, setCoordinate }) {
   const { camera, gl, scene } = useThree();
   const raycaster = useRef(new THREE.Raycaster());
   const mouse = useRef(new THREE.Vector2());
+  const hoveredMesh = useRef(null);
 
   useEffect(() => {
-    const handleMouseClick = (event) => {
+    const handleMouseMove = (event) => {
       const canvasBounds = gl.domElement.getBoundingClientRect();
       const canvasX = event.clientX - canvasBounds.left;
       const canvasY = event.clientY - canvasBounds.top;
@@ -60,19 +61,32 @@ function Raycaster({ setSelectedMesh, setCoordinate }) {
 
       const intersects = raycaster.current.intersectObjects(scene.children);
       if (intersects.length > 0) {
-        setSelectedMesh(intersects[0].object);
+        document.body.style.cursor = "pointer";
+        hoveredMesh.current = intersects[0].object;
+      } else {
+        document.body.style.cursor = "default";
+        hoveredMesh.current = null;
+      }
+    };
+
+    const handleMouseClick = (event) => {
+      if (hoveredMesh.current) {
+        setSelectedMesh(hoveredMesh.current);
         setCoordinate({ x: event.clientX, y: event.clientY });
       } else {
         setSelectedMesh(null);
         setCoordinate({ x: null, y: null });
       }
     };
+
+    gl.domElement.addEventListener("mousemove", handleMouseMove);
     gl.domElement.addEventListener("click", handleMouseClick);
 
     return () => {
+      gl.domElement.removeEventListener("mousemove", handleMouseMove);
       gl.domElement.removeEventListener("click", handleMouseClick);
     };
-  }, [camera, gl, scene]);
+  }, [camera, gl, scene, hoveredMesh.current]);
 
   return null;
 }
