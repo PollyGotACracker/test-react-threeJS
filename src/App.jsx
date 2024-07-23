@@ -2,7 +2,13 @@ import source from "./assets/free_bread_pack_cs2_glb/source/bread pack.glb?url";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useThree } from "@react-three/fiber";
-import { useGLTF, OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import {
+  useGLTF,
+  OrbitControls,
+  PerspectiveCamera,
+  Html,
+} from "@react-three/drei";
+import { convertMeshName } from "./utils/convertValue";
 
 function App() {
   const [selectedMesh, setSelectedMesh] = useState(null);
@@ -11,13 +17,13 @@ function App() {
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
       <Canvas
-        style={{ width: "100vw", height: "100vh" }}
+        style={{ width: "100%", height: "100%" }}
         // camera={{ position: [8, 15, 12], fov: 50, zoom: 40 }}
       >
         <PerspectiveCamera makeDefault position={[8, 15, 12]} zoom={30} />
         <directionalLight castShadow position={[0, 10, 5]} intensity={4} />
         <ambientLight intensity={0.4} />
-        <Scene />
+        <Scene mesh={selectedMesh} />
         <Raycaster
           setSelectedMesh={setSelectedMesh}
           setCoordinate={setCoordinate}
@@ -30,13 +36,41 @@ function App() {
   );
 }
 
-function Scene() {
+function Scene({ mesh }) {
   // @react-three/fiber:
   // const { scene } = useLoader(GLTFLoader, source);
   const { scene } = useGLTF(source);
 
   return (
-    <primitive object={scene} scale={[1, 1, 1]} position={[-0.1, -0.04, 0]} />
+    <primitive object={scene} scale={[1, 1, 1]} position={[-0.1, -0.04, 0]}>
+      {scene.children.map((child) => {
+        return child.isMesh && child.name === mesh?.name ? (
+          <Name key={child.uuid} mesh={child} position={child.position} />
+        ) : null;
+      })}
+    </primitive>
+  );
+}
+
+function Name({ mesh, position }) {
+  return (
+    <Html position={position}>
+      <div
+        style={{
+          transform: "translate(-50%, -50%)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "150px",
+          height: "40px",
+          color: "white",
+          backgroundColor: "black",
+          padding: "10px",
+        }}
+      >
+        {convertMeshName(mesh.name)}
+      </div>
+    </Html>
   );
 }
 
@@ -79,12 +113,19 @@ function Raycaster({ setSelectedMesh, setCoordinate }) {
       }
     };
 
+    // const handleResize = () => {
+    //   setSelectedMesh(null);
+    //   setCoordinate({ x: null, y: null });
+    // };
+
     gl.domElement.addEventListener("mousemove", handleMouseMove);
     gl.domElement.addEventListener("click", handleMouseClick);
+    // window.addEventListener("resize", handleResize);
 
     return () => {
       gl.domElement.removeEventListener("mousemove", handleMouseMove);
       gl.domElement.removeEventListener("click", handleMouseClick);
+      // window.removeEventListener("resize", handleResize);
     };
   }, [camera, gl, scene, hoveredMesh.current]);
 
@@ -110,21 +151,6 @@ function HighlightMesh({ mesh, color }) {
 }
 
 function Detail({ mesh, coordinate }) {
-  const convertMeshName = () => {
-    switch (mesh.name) {
-      case "bread":
-        return "Rye Bread";
-      case "bread001":
-        return "Pineapple Bun";
-      case "bread002":
-        return "Long Baguette";
-      case "bread003":
-        return "Short Baguette";
-      default:
-        return "";
-    }
-  };
-
   const meshName = convertMeshName(mesh.name);
 
   return (
@@ -142,7 +168,7 @@ function Detail({ mesh, coordinate }) {
       >
         {`${meshName} is selected`}
       </div>
-      <div
+      {/* <div
         style={{
           position: "absolute",
           top: `${coordinate.y}px`,
@@ -161,7 +187,7 @@ function Detail({ mesh, coordinate }) {
         }}
       >
         {`${meshName} is selected`}
-      </div>
+      </div> */}
     </>
   );
 }
