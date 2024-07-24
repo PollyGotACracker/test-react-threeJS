@@ -54,10 +54,14 @@ function Scene({ mesh }) {
 
 function Name({ mesh, position }) {
   return (
-    <Html position={position}>
+    <Html
+      position={position}
+      style={{
+        transform: "translate(-50%, -50%)",
+      }}
+    >
       <div
         style={{
-          transform: "translate(-50%, -50%)",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
